@@ -1,35 +1,148 @@
 <?php
+
+
+
+session_set_cookie_params([
+    'httponly' => true,
+    'samesite' => 'Lax',
+    'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'
+]);
+
 session_start();
 
 include 'db.php';
 
-/* ===== FETCH & SHUFFLE QUESTIONS (ONCE PER SESSION) ===== */
-if (!isset($_SESSION['questions'])) {
-    $result = $conn->query("SELECT * FROM questions");
+const QUIZ_DURATION = 20 * 60; 
+
+
+
+if (
+    isset($_SESSION['quiz_submitted']) &&
+    $_SESSION['quiz_submitted'] === true
+) {
+    header("Location: THANKYOU.PHP");
+    exit;
+}
+
+
+
+if (
+    !isset($_SESSION['questions']) ||
+    !isset($_SESSION['quiz_end_time']) ||
+    !isset($_SESSION['submission_token'])
+) {
+
+    
+    unset($_SESSION['quiz_submitted']);
+
+    
+    $result = $conn->query("
+        SELECT
+            id,
+            question_text,
+            option_a,
+            option_b,
+            option_c,
+            option_d,
+            correct_option
+        FROM questions
+        ORDER BY id ASC
+    ");
+
+    if (!$result) {
+        http_response_code(503);
+        die("Unable to load quiz questions.");
+    }
+
     $questions = [];
 
     while ($row = $result->fetch_assoc()) {
         $questions[] = $row;
     }
 
+    if (count($questions) === 0) {
+        die("No quiz questions are available.");
+    }
+
+
+    
     shuffle($questions);
+
     $_SESSION['questions'] = $questions;
-} else {
-    $questions = $_SESSION['questions'];
+
+
+    
+    $_SESSION['option_orders'] = [];
+
+    foreach ($questions as $q) {
+
+        $keys = ['A', 'B', 'C', 'D'];
+
+        shuffle($keys);
+
+        $_SESSION['option_orders'][$q['id']] = $keys;
+    }
+
+
+    
+    $_SESSION['quiz_start_time'] = time();
+
+    $_SESSION['quiz_end_time'] =
+        $_SESSION['quiz_start_time'] + QUIZ_DURATION;
+
+
+    
+    $_SESSION['quiz_active'] = true;
+
+    unset($_SESSION['quiz_submitted']);
+
+
+    
+    $_SESSION['submission_token'] = bin2hex(random_bytes(32));
+
+
+    
+    $_SESSION['quiz_csrf_token'] = bin2hex(random_bytes(32));
 }
+
+
+
+$questions = $_SESSION['questions'];
+
+$serverEndTime = (int)$_SESSION['quiz_end_time'];
+
+$remainingSeconds = max(
+    0,
+    $serverEndTime - time()
+);
+
+$csrfToken = $_SESSION['quiz_csrf_token'];
+
+$submissionToken = $_SESSION['submission_token'];
+
+
+
+$storageKey = "quiz_backup_" . $submissionToken;
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>College Quiz</title>
 
-<!-- ===== STYLES ===== -->
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
-* { box-sizing: border-box; }
+<style>
+
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
@@ -50,8 +163,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .quiz-header {
@@ -83,10 +203,27 @@ body {
     animation: pulse 1.5s infinite;
 }
 
+#timer.warning {
+    background: #d97706;
+}
+
+#timer.danger {
+    background: #b91c1c;
+    animation: none;
+}
+
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .team-box {
@@ -101,6 +238,10 @@ body {
     border: 2px solid #1d2671;
     font-size: 16px;
     outline: none;
+}
+
+.team-box input:focus {
+    box-shadow: 0 0 0 3px rgba(29,38,113,0.12);
 }
 
 .question {
@@ -162,107 +303,762 @@ input[type=submit]:hover {
     transform: translateY(-2px);
     box-shadow: 0 15px 35px rgba(29,38,113,0.5);
 }
+
+input[type=submit]:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#connectionStatus {
+    display: none;
+    max-width: 700px;
+    margin: 0 auto 20px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    background: #fff3cd;
+    color: #664d03;
+    border: 1px solid #ffecb5;
+}
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 15px;
+    }
+
+    .quiz-container {
+        padding: 20px;
+    }
+
+    .team-box input {
+        width: 100%;
+    }
+
+    .quiz-header h2 {
+        font-size: 21px;
+    }
+
+    .quiz-header h3 {
+        font-size: 15px;
+    }
+}
+
 </style>
 
 
-<!-- ===== TIMER SCRIPT ===== -->
 <script>
-const QUIZ_DURATION = 20 * 60; // 20 minutes in seconds
-const STORAGE_KEY = "quiz_timer_end";
 
-let endTime = localStorage.getItem(STORAGE_KEY);
 
-if (!endTime) {
-    endTime = Date.now() + QUIZ_DURATION * 1000;
-    localStorage.setItem(STORAGE_KEY, endTime);
-} else {
-    endTime = parseInt(endTime);
-}
 
-/* ===== TIMER LOOP ===== */
-function startTimer() {
-    const timer = document.getElementById("timer");
+const QUIZ_STORAGE_KEY =
+    <?= json_encode($storageKey) ?>;
 
-    const interval = setInterval(() => {
-        const remaining = Math.floor((endTime - Date.now()) / 1000);
+const QUIZ_SUBMISSION_TOKEN =
+    <?= json_encode($submissionToken) ?>;
 
-        if (remaining <= 0) {
-            clearInterval(interval);
-            localStorage.removeItem(STORAGE_KEY);
-            timer.innerHTML = "0m : 00s";
-            alert("Time is up! Submitting quiz...");
-            document.getElementById("quizForm").submit();
+let remainingSeconds =
+    <?= (int)$remainingSeconds ?>;
+
+let timerInterval = null;
+
+let submitting = false;
+
+let autoSubmitStarted = false;
+
+let retryTimer = null;
+
+
+
+function saveQuizBackup() {
+
+    const form = document.getElementById("quizForm");
+
+    if (!form) {
+        return;
+    }
+
+    const data = {
+        team_name:
+            form.querySelector('[name="user_name"]').value,
+
+        answers: {},
+
+        saved_at: Date.now()
+    };
+
+
+    
+    form.querySelectorAll(
+        'input[type="radio"][name^="answer["]:checked'
+    ).forEach(function (radio) {
+
+        const match =
+            radio.name.match(/^answer\[(\d+)\]$/);
+
+        if (!match) {
             return;
         }
 
-        const m = Math.floor(remaining / 60);
-        const s = remaining % 60;
-        timer.innerHTML = `${m}m : ${s < 10 ? "0" : ""}${s}s`;
+        data.answers[match[1]] = radio.value;
+    });
 
-    }, 1000);
+
+    try {
+
+        localStorage.setItem(
+            QUIZ_STORAGE_KEY,
+            JSON.stringify(data)
+        );
+
+    } catch (error) {
+
+        
+
+        console.warn(
+            "Quiz backup unavailable:",
+            error
+        );
+    }
 }
 
-window.onload = startTimer;
+
+
+function restoreQuizBackup() {
+
+    let raw;
+
+    try {
+
+        raw =
+            localStorage.getItem(QUIZ_STORAGE_KEY);
+
+    } catch (error) {
+
+        return;
+    }
+
+    if (!raw) {
+        return;
+    }
+
+    let data;
+
+    try {
+
+        data = JSON.parse(raw);
+
+    } catch (error) {
+
+        localStorage.removeItem(QUIZ_STORAGE_KEY);
+
+        return;
+    }
+
+
+    const form =
+        document.getElementById("quizForm");
+
+    if (!form) {
+        return;
+    }
+
+
+    
+    const teamInput =
+        form.querySelector('[name="user_name"]');
+
+    if (
+        teamInput &&
+        typeof data.team_name === "string" &&
+        data.team_name.length > 0
+    ) {
+
+        teamInput.value = data.team_name;
+    }
+
+
+    
+    if (
+        data.answers &&
+        typeof data.answers === "object"
+    ) {
+
+        Object.entries(data.answers)
+            .forEach(function ([questionId, answer]) {
+
+                const selector =
+                    `input[name="answer[${questionId}]"][value="${CSS.escape(answer)}"]`;
+
+                const radio =
+                    form.querySelector(selector);
+
+                if (radio) {
+                    radio.checked = true;
+                }
+
+            });
+    }
+}
+
+
+
+function clearQuizBackup() {
+
+    try {
+
+        localStorage.removeItem(
+            QUIZ_STORAGE_KEY
+        );
+
+    } catch (error) {
+        console.warn(
+            "Could not clear quiz backup:",
+            error
+        );
+    }
+}
+
+
+
+function showConnectionStatus(message) {
+
+    const status =
+        document.getElementById("connectionStatus");
+
+    if (!status) {
+        return;
+    }
+
+    status.style.display = "block";
+
+    status.textContent = message;
+}
+
+
+
+function hideConnectionStatus() {
+
+    const status =
+        document.getElementById("connectionStatus");
+
+    if (!status) {
+        return;
+    }
+
+    status.style.display = "none";
+}
+
+
+
+function disableQuizForSubmission() {
+
+    const form =
+        document.getElementById("quizForm");
+
+    if (!form) {
+        return;
+    }
+
+    form.querySelectorAll(
+        'input[type="radio"], input[name="user_name"]'
+    ).forEach(function (input) {
+
+        input.disabled = true;
+
+    });
+
+
+    const submitButton =
+        form.querySelector('input[type="submit"]');
+
+    if (submitButton) {
+
+        submitButton.disabled = true;
+
+        submitButton.value =
+            "Submitting...";
+    }
+}
+
+
+
+async function submitQuiz(retryNumber = 0) {
+
+    if (submitting) {
+        return;
+    }
+
+    submitting = true;
+
+
+    const form =
+        document.getElementById("quizForm");
+
+
+    
+    saveQuizBackup();
+
+
+    
+    const formData =
+        new FormData(form);
+
+
+    
+    try {
+
+        const response =
+            await fetch(
+                "SUBMIT.PHP",
+                {
+                    method: "POST",
+                    body: formData,
+                    credentials: "same-origin",
+                    cache: "no-store",
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    }
+                }
+            );
+
+
+        
+        if (!response.ok) {
+
+            throw new Error(
+                `Server returned HTTP ${response.status}`
+            );
+        }
+
+
+        
+        const result =
+            await response.json();
+
+
+        
+        if (result.success === true) {
+
+            clearQuizBackup();
+
+            window.location.href =
+                result.redirect;
+
+            return;
+        }
+
+
+        
+        throw new Error(
+            result.message ||
+            "The server could not confirm submission."
+        );
+
+
+    } catch (error) {
+
+        submitting = false;
+
+
+        
+        const maxRetries = 5;
+
+
+        if (retryNumber < maxRetries) {
+
+            const delay =
+                Math.min(
+                    2000 * Math.pow(2, retryNumber),
+                    15000
+                );
+
+
+            showConnectionStatus(
+                "Connection problem. " +
+                "Your answers are saved on this device. " +
+                `Retrying in ${Math.ceil(delay / 1000)} seconds...`
+            );
+
+
+            clearTimeout(retryTimer);
+
+
+            retryTimer =
+                setTimeout(function () {
+
+                    submitQuiz(
+                        retryNumber + 1
+                    );
+
+                }, delay);
+
+
+            return;
+        }
+
+
+        
+        showConnectionStatus(
+            "We could not contact the quiz server. " +
+            "YOUR ANSWERS ARE STILL SAVED ON THIS DEVICE. " +
+            "Please stay on this page and try Submit again."
+        );
+
+
+        const submitButton =
+            form.querySelector('input[type="submit"]');
+
+        if (submitButton) {
+
+            submitButton.disabled = false;
+
+            submitButton.value =
+                "Submit Quiz";
+        }
+    }
+}
+
+
+
+function startTimer() {
+
+    const timer =
+        document.getElementById("timer");
+
+
+    function updateTimer() {
+
+        
+        if (remainingSeconds <= 0) {
+
+            clearInterval(timerInterval);
+
+            timer.innerHTML =
+                "0m : 00s";
+
+            timer.classList.add("danger");
+
+
+            if (!autoSubmitStarted) {
+
+                autoSubmitStarted = true;
+
+                saveQuizBackup();
+
+                showConnectionStatus(
+                    "Time is up. Saving your answers..."
+                );
+
+
+                
+                submitQuiz();
+            }
+
+            return;
+        }
+
+
+        const minutes =
+            Math.floor(
+                remainingSeconds / 60
+            );
+
+        const seconds =
+            remainingSeconds % 60;
+
+
+        timer.innerHTML =
+            `${minutes}m : ${
+                seconds < 10 ? "0" : ""
+            }${seconds}s`;
+
+
+        
+        timer.classList.remove(
+            "warning",
+            "danger"
+        );
+
+
+        if (remainingSeconds <= 60) {
+
+            timer.classList.add("danger");
+
+        } else if (remainingSeconds <= 300) {
+
+            timer.classList.add("warning");
+
+        }
+
+
+        remainingSeconds--;
+    }
+
+
+    updateTimer();
+
+    timerInterval =
+        setInterval(
+            updateTimer,
+            1000
+        );
+}
+
+
+
+window.addEventListener(
+    "load",
+    function () {
+
+        restoreQuizBackup();
+
+        startTimer();
+
+    }
+);
+
+
+
+document.addEventListener(
+    "change",
+    function (event) {
+
+        if (
+            event.target.matches(
+                'input[type="radio"]'
+            )
+        ) {
+
+            saveQuizBackup();
+
+        }
+
+    }
+);
+
+
+
+document.addEventListener(
+    "input",
+    function (event) {
+
+        if (
+            event.target.name === "user_name"
+        ) {
+
+            saveQuizBackup();
+
+        }
+
+    }
+);
+
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const form =
+            document.getElementById("quizForm");
+
+        form.addEventListener(
+            "submit",
+            function (event) {
+
+                event.preventDefault();
+
+                if (submitting) {
+                    return;
+                }
+
+                
+                saveQuizBackup();
+
+                submitQuiz();
+
+            }
+        );
+
+    }
+);
+
+
+
+window.addEventListener(
+    "beforeunload",
+    function (event) {
+
+        if (!submitting) {
+
+            saveQuizBackup();
+
+            event.preventDefault();
+
+            event.returnValue = "";
+
+        }
+
+    }
+);
+
 </script>
-<!-- ===== TIMER SCRIPT ===== -->
-
-
 
 </head>
+
 
 <body>
 
 <div class="quiz-container">
 
     <div class="quiz-header">
-        <h2>SACCM ZENITH CS CLUB</h2>
-        <h3>CASE FILES: CAMPUS EDITION (<b>PRELIMS ROUND</b>)</h3>
+
+        <h2>
+            Computer Science department of SACCM
+        </h2>
+
     </div>
+
 
     <div id="timer"></div>
 
-    <form method="post" action="submit.php" id="quizForm">
+
+    <div id="connectionStatus"></div>
+
+
+    <form
+        method="post"
+        action="SUBMIT.PHP"
+        id="quizForm"
+    >
+
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="<?= htmlspecialchars(
+                $csrfToken,
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>"
+        >
+
+
+        <input
+            type="hidden"
+            name="submission_token"
+            value="<?= htmlspecialchars(
+                $submissionToken,
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>"
+        >
+
 
         <div class="team-box">
-            <input type="text" name="user_name" placeholder="Enter Your Team Name" required>
+
+            <input
+                type="text"
+                name="user_name"
+                placeholder="Enter Your Team Name"
+                maxlength="100"
+                autocomplete="off"
+                required
+            >
+
         </div>
+
 
         <?php
-        foreach ($questions as $index => $q):
+
+        foreach (
+            $questions
+            as $index => $q
+        ):
+
             $options = [
+
                 "A" => $q['option_a'],
+
                 "B" => $q['option_b'],
+
                 "C" => $q['option_c'],
+
                 "D" => $q['option_d']
+
             ];
-            $keys = array_keys($options);
-            shuffle($keys);
+
+
+            $keys =
+                $_SESSION['option_orders'][$q['id']]
+                ?? ['A', 'B', 'C', 'D'];
+
         ?>
 
+
         <div class="question">
+
             <strong>
+
                 Q<?= $index + 1 ?>.
-                <?= htmlspecialchars($q['question_text']) ?>
+
+                <?= htmlspecialchars(
+                    $q['question_text'],
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>
+
             </strong>
 
+
             <div class="options">
-                <?php foreach ($keys as $i => $k): ?>
-                <label>
-                    <input type="radio"
-                           name="answer[<?= $q['id'] ?>]"
-                           value="<?= $k ?>"
-                           <?= $i == 0 ? 'required' : '' ?>>
-                    <?= htmlspecialchars($options[$k]) ?>
-                </label>
+
+                <?php foreach (
+                    $keys
+                    as $i => $k
+                ): ?>
+
+                    <label>
+
+                        <input
+                            type="radio"
+                            name="answer[<?= (int)$q['id'] ?>]"
+                            value="<?= htmlspecialchars(
+                                $k,
+                                ENT_QUOTES,
+                                'UTF-8'
+                            ) ?>"
+                            <?= $i === 0 ? 'required' : '' ?>
+                        >
+
+                        <?= htmlspecialchars(
+                            $options[$k],
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+
+                    </label>
+
                 <?php endforeach; ?>
+
             </div>
+
         </div>
+
 
         <?php endforeach; ?>
 
-        <input type="submit" value="Submit Quiz">
+
+        <input
+            type="submit"
+            value="Submit Quiz"
+        >
 
     </form>
+
 </div>
 
 </body>
