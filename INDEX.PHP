@@ -12,7 +12,7 @@ session_start();
 
 include 'db.php';
 
-const QUIZ_DURATION = 20 * 60; 
+const QUIZ_DURATION = 15 * 60; 
 
 
 
@@ -20,7 +20,7 @@ if (
     isset($_SESSION['quiz_submitted']) &&
     $_SESSION['quiz_submitted'] === true
 ) {
-    header("Location: THANKYOU.PHP");
+    header("Location: thankyou.php");
     exit;
 }
 
@@ -147,7 +147,7 @@ $storageKey = "quiz_backup_" . $submissionToken;
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #1d2671, #c33764);
+    background: #232b2b;
     min-height: 100vh;
     padding: 30px;
 }
@@ -293,7 +293,7 @@ input[type=submit] {
     border-radius: 30px;
     border: none;
     color: #fff;
-    background: linear-gradient(135deg, #1d2671, #c33764);
+    background: #232b2b;
     cursor: pointer;
     box-shadow: 0 10px 25px rgba(29,38,113,0.4);
     transition: 0.25s;
@@ -612,7 +612,7 @@ async function submitQuiz(retryNumber = 0) {
 
         const response =
             await fetch(
-                "SUBMIT.PHP",
+                "submit.php",
                 {
                     method: "POST",
                     body: formData,
@@ -932,7 +932,7 @@ window.addEventListener(
 
     <form
         method="post"
-        action="SUBMIT.PHP"
+        action="submit.php"
         id="quizForm"
     >
 

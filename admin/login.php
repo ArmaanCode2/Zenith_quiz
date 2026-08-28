@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     
-    if ($username === "admin" && $password === "admin@123") {
+    if ($username === "sacdep" && $password === "sacdep") {
 
         
         session_regenerate_id(true);
@@ -52,8 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Admin Login</title>
 
 <style>
-
-@import url('https:
 
 *{
     box-sizing:border-box;

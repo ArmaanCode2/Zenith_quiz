@@ -18,7 +18,7 @@ if (
 ) {
 
     header(
-        "Location: admin/login.php"
+        "Location: tie_start.php"
     );
 
     exit;

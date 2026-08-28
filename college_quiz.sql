@@ -62,12 +62,6 @@ CREATE TABLE `results` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
-INSERT INTO `results` (`id`, `user_name`, `score`, `total_questions`, `timestamp`) VALUES
-(1, 'demmoooo', 6, 25, '2026-01-26 20:19:53'),
-(2, '123465', 7, 25, '2026-01-26 20:22:20'),
-(3, 'Test1', 8, 25, '2026-01-26 20:22:20'),
-(4, 'Arpit', 11, 25, '2026-01-27 20:12:31');
-
 CREATE TABLE `tie_questions` (
   `id` int(11) NOT NULL,
   `question_text` text DEFAULT NULL,
@@ -115,10 +109,6 @@ CREATE TABLE `tie_results_old` (
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-
-INSERT INTO `tie_results_old` (`id`, `user_name`, `score`, `total_questions`, `submitted_at`) VALUES
-(1, 'TEAM', 1, 5, '2026-01-27 14:37:56'),
-(2, 'TEAM', 0, 5, '2026-01-27 14:44:08');
 
 
 ALTER TABLE `questions`

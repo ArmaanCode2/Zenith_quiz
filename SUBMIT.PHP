@@ -35,7 +35,7 @@ function jsonResponse(
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
-    header("Location: INDEX.PHP");
+    header("Location: index.php");
 
     exit;
 }
@@ -59,7 +59,7 @@ if (
         jsonResponse(
             true,
             "Quiz already submitted.",
-            "THANKYOU.PHP"
+            "thankyou.php"
         );
     }
 
@@ -149,7 +149,7 @@ try {
         jsonResponse(
             true,
             "Quiz already saved successfully.",
-            "THANKYOU.PHP"
+            "thankyou.php"
         );
     }
 
@@ -303,7 +303,7 @@ try {
         jsonResponse(
             true,
             "Quiz already saved successfully.",
-            "THANKYOU.PHP"
+            "thankyou.php"
         );
     }
 
@@ -465,5 +465,5 @@ jsonResponse(
     $timeExpired
         ? "Time expired. Your answered questions were saved."
         : "Quiz submitted successfully.",
-    "THANKYOU.PHP"
+    "thankyou.php"
 );

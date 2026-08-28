@@ -30,12 +30,7 @@ body{
 
     font-family:'Poppins',sans-serif;
 
-    background:
-        linear-gradient(
-            135deg,
-            #1d2671,
-            #c33764
-        );
+    background: #232b2b;
 
     display:flex;
 

@@ -70,8 +70,6 @@ $result = $conn->query($sql);
 
 <style>
 
-@import url('https:
-
 *{
     box-sizing:border-box;
 }

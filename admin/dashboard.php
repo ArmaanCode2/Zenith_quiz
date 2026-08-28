@@ -78,8 +78,6 @@ if ($statsResult) {
 
 <style>
 
-@import url('https:
-
 * {
     box-sizing: border-box;
 }
