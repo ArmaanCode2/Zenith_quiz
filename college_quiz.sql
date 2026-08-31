@@ -34,7 +34,7 @@ INSERT INTO `questions` (`id`, `question_text`, `option_a`, `option_b`, `option_
 (14, 'Which NASA space telescope uses a large segmented primary mirror and was designed primarily to observe the universe in infrared wavelengths?', 'Hubble Space Telescope', 'James Webb Space Telescope', 'Chandra X-ray Observatory', 'Spitzer Space Telescope', 'B'),
 (15, 'Which company owns the Steam gaming platform?', 'Epic Games', 'Valve', 'Microsoft', 'Tencent', 'B'),
 (16, 'Which company created the CUDA parallel computing platform?', 'AMD', 'Intel', 'NVIDIA', 'ARM', 'C'),
-(17, 'Which company developed the Java programming language originally?', 'IBM', 'Sun Microsystems', 'Microsoft', 'Oracle', 'B'),
+(17, 'Which architectural technology/algorithm do massive mapping systems like Google Maps primarily rely on to execute sub-second route calculation and live dynamic rerouting across global-scale road networks?', 'Bellman-Ford algorithm enhanced with spatial hashing and dynamic programming table', 'Contraction Hierarchies combined with heuristic search (such as A*)', 'Bi-directional Breadth-First Search (BFS) paired with real-time Euclidean bounding-box pruning', 'Floyd-Warshall algorithm accelerated via massively parallelized GPU matrix tensor multiplications', 'B'),
 (18, 'Six students — A, B, C, D, E and F — are sitting around a circular table, all facing the centre The following conditions apply:
 A is sitting immediately to the left of B.
 C is sitting exactly opposite A.
@@ -85,7 +85,7 @@ CREATE TABLE `tie_questions` (
 
 
 INSERT INTO `tie_questions` (`id`, `question_text`, `option_a`, `option_b`, `option_c`, `option_d`, `correct_option`) VALUES
-(1, 'Which architectural technology/algorithm do massive mapping systems like Google Maps primarily rely on to execute sub-second route calculation and live dynamic rerouting across global-scale road networks?', 'Bellman-Ford algorithm enhanced with spatial hashing and dynamic programming table', 'Contraction Hierarchies combined with heuristic search (such as A*)', 'Bi-directional Breadth-First Search (BFS) paired with real-time Euclidean bounding-box pruning', 'Floyd-Warshall algorithm accelerated via massively parallelized GPU matrix tensor multiplications', 'B'),
+(1, 'Which company developed the Java programming language originally?', 'IBM', 'Sun Microsystems', 'Microsoft', 'Oracle', 'B'),
 (2, 'Which Microsoft device, first introduced in 2012, combines the portability of a tablet with the functionality of a computer?', 'Microsoft Surface', 'Microsoft Studio', 'Microsoft Lumia', 'Microsoft Windows', 'A'),
 (3, 'In modern out-of-order superscalar processors, which structure primarily helps track the status and dependencies of in-flight instructions so operands can be supplied when they become available?', 'Reorder Buffer', 'Reservation Station', 'Branch Target Buffer', 'Translation Lookaside Buffer', 'B'),
 (4, 'Which famous fictional AI system from 2001: A Space Odyssey became one of the most recognizable representations of artificial intelligence in cinema?', 'JARVIS', 'HAL 9000', 'Skynet', 'Mother (MU-TH-UR 6000)', 'B'),
