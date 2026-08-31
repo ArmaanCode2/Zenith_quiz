@@ -182,10 +182,6 @@ body{
 
         The results will be revealed soon…
 
-        Keep your eyes glued to our
-        <b>Instagram page</b>
-        for the big announcement! 📣
-
     </p>
 
 

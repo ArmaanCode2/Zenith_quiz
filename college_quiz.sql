@@ -15,32 +15,43 @@ CREATE TABLE `questions` (
   `correct_option` char(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+-- new questions
 INSERT INTO `questions` (`id`, `question_text`, `option_a`, `option_b`, `option_c`, `option_d`, `correct_option`) VALUES
-(1, 'Which type of hazard occurs due to hardware resource conflict?', 'Data hazard', 'Control hazard', 'Structural hazard', 'Logical hazard', 'C'),
-(2, 'The speed of a CPU is measured in:', 'Bytes', 'MIPS', 'Hertz', 'RPM', 'C'),
-(3, 'Which of the following memories is fastest?', 'RAM', 'Cache', 'Register', 'Secondary memory', 'C'),
-(4, 'Which method is used to access an element by its ID?', 'getElement()', 'getElementById()', 'getIdElement()', 'fetchElementById()', 'B'),
-(5, 'Which JavaScript function is used to delay execution of code?', 'delay()', 'wait()', 'setTimeout()', 'pause()', 'C'),
-(6, 'Which NVIDIA product is best suited for IoT and embedded systems?', 'Quadro RTX', 'NVIDIA Jetson', 'NVIDIA Tesla', 'GeForce GTX', 'B'),
-(7, 'Arrange the generations of computers in the correct order.', 'Transistor → Vacuum Tube → IC → Microprocessor → AI', 'Vacuum Tube → Transistor → IC → Microprocessor → AI', 'IC → Transistor → Vacuum Tube → Microprocessor → AI', 'Vacuum Tube → IC → Transistor → Microprocessor → AI', 'B'),
-(8, 'Which shortcut key opens File Explorer?', 'Ctrl + E', 'Alt + E', 'Windows + E', 'Ctrl + F', 'C'),
-(9, 'Which memory stores the booting instructions?', 'RAM', 'Cache', 'Hard Disk', 'ROM', 'D'),
-(10, 'What does DTP stand for?', 'Data Transfer Process', 'Desktop Text Program', 'Desktop Publishing', 'Digital Text Processing', 'C'),
-(11, 'Which is an example of On-Page SEO?', 'Backlinks', 'Social media sharing', 'Keyword optimization', 'Guest posting', 'C'),
-(12, 'CTR stands for:', 'Click Through Rate', 'Click-Through Run', 'Cost To Run', 'Campaign Traffic Ratio', 'B'),
-(13, 'In hexadecimal number system, letters A–F represent:', '1–6', '5–10', '10–15', '11–16', 'C'),
-(14, 'A bulb glows if the binary representation of its number contains an even number of 1s. How many bulbs glow from 1 to 7?', '2', '3', '4', '5', 'B'),
-(15, 'Man-in-the-middle attack occurs when:', 'Attacker intercepts communication', 'System crashes', 'Network overloads', 'Password is guessed', 'A'),
-(16, 'Which port is commonly used for HTTP traffic?', '21', '22', '80', '443', 'C'),
-(17, 'Bluetooth operates in which frequency range?', '2.4 GHz – 2.485 GHz', '5 GHz – 5.5 GHz', '2.402 GHz – 2.48 GHz', '1.8 GHz – 2.2 GHz', 'C'),
-(18, 'Which Wi-Fi standard introduced MU-MIMO?', '802.11n', '802.11ac', '802.11b', '802.11ax', 'D'),
-(19, 'The mean of 6 numbers is 12. If one number is removed, the mean becomes 10. Find the removed number.', '8', '20', '22', '24', 'C'),
-(20, 'Which of the following is a major feature of Web3?', 'Centralized servers', 'Decentralization using blockchain', 'HTTP-only websites', 'Cloud storage only', 'B'),
-(21, 'Which of the following is a trending low-code/no-code platform?', 'TensorFlow', 'Bubble', 'Docker', 'GitHub', 'B'),
-(22, 'Which company unveiled a space-based, quantum-resistant cryptocurrency system at Davos 2026?', 'IBM', 'Google', 'WISeKey', 'Microsoft', 'C'),
-(23, 'At CES 2026, which sector was identified as seeing rapid AI adoption?', 'Food delivery', 'Manufacturing', 'Content creation, marketing, and media', 'Agriculture only', 'C'),
-(24, 'A “content audit” is performed to:', 'Create new content', 'Analyze existing content for performance and gaps', 'Remove all old content', 'Increase ad spending', 'B'),
-(25, "If in a certain code '268' means 'equality and prosperity', '839' means 'prosperity nasty position' and '361' means ' Equality respected position' , then for which word the digit '2' is used?", 'Respected', 'And', 'Prosperity', 'Equality', 'B');
+(1, 'What is the name of Elon Musks neurotechnology company working on implantable brain-computer interfaces (BCIs)?', 'Brainlink', 'The Boring Company', 'Hyperloop', 'Neuralink', 'D'),
+(2, 'YouTube was originally conceived as a platform for sharing which type of content, before evolving into the massive video platform it is today?', 'Video dating profiles', 'Online gaming streams', 'Video sharing', 'Music downloads', 'A'),
+(3, 'Which entertainment property is recognized as the single highest-grossing multimedia and gaming franchise of all time?', 'Super Mario', 'Grand Theft Auto', 'Pokémon', 'Star Wars', 'C'),
+(4, 'Which company created the PostScript page description language and later became famous for PDF technology?', 'Adobe', 'Autodesk', 'Corel', 'Xerox', 'A'),
+(5, 'Unlike SCUBA and CAPTCHA, which became everyday words after being created from longer technical phrases, which term originated as a military technology for detecting the presence, distance, and direction of distant objects using radio waves?', 'SONAR', 'RADAR', 'LIDAR', 'SODAR', 'B'),
+(6, 'Which game launched in 2016 quickly became one of the most downloaded mobile games in history, attracting tens of millions of players shortly after launch. Which game was responsible for this unprecedented surge in popularity?', 'Clash Royale', 'Among Us', 'Pokemon Go', 'Super Mario Run', 'C'),
+(7, 'A retail store uses smart security cameras powered by Computer Vision to monitor shelves. When an item runs out, the system automatically alerts the manager to restock it. What is this automated operational process called?', 'On-Shelf Availability Tracking', 'Real-Time Stocktaking', 'Inventory Management', 'Just-in-Time Logistics', 'A'),
+(8, 'Which programming language is primarily used as the backbone for high-performance game engines like Unreal Engine, driving AAA titles such as PUBG and Grand Theft Auto?', 'Java', 'JavaScript', 'C++', 'Python', 'C'),
+(9, 'Researchers in Japan recently set a world record for data transmission speed. Which of the following correctly identifies the maximum speed achieved by them?', '1.02 TeraBytes per second', '1.02 Terabits per second', '1.02 PetaBytes per second', '1.02 Petabits per second', 'D'),
+(10, 'Which deep-tech startup launched the indigenous iron-air battery pilot project at NTPC Simhadri Thermal Power Station?', 'Amara Raja Energy', 'Exide Energy', 'Meine Electric', 'Tata Power', 'C'),
+(11, 'Andy Rubin is known as one of the three principal visionaries who co-founded _______ back in October 2003.', 'PalmOS', 'Android', 'WebOS', 'BlackBerry OS', 'B'),
+(12, 'For Cyber Monday in the US in 2019, Google "baked" Pixel 4 phones inside the pizza boxes of what fast food chain as a limited promotion?', 'Dominos', 'Pizza Hut', 'Papa Johns', 'Panera Bread (Baked goods and bread)', 'A'),
+(13, 'Which science-fiction film is widely regarded as one of the earliest movies to use computer-generated imagery, using digital effects to depict a robotic characters point of view?', 'Tron', 'Westworld', 'Star Wars', 'Avatar', 'B'),
+(14, 'Which NASA space telescope uses a large segmented primary mirror and was designed primarily to observe the universe in infrared wavelengths?', 'Hubble Space Telescope', 'James Webb Space Telescope', 'Chandra X-ray Observatory', 'Spitzer Space Telescope', 'B'),
+(15, 'Which company owns the Steam gaming platform?', 'Epic Games', 'Valve', 'Microsoft', 'Tencent', 'B'),
+(16, 'Which company created the CUDA parallel computing platform?', 'AMD', 'Intel', 'NVIDIA', 'ARM', 'C'),
+(17, 'Which company developed the Java programming language originally?', 'IBM', 'Sun Microsystems', 'Microsoft', 'Oracle', 'B'),
+(18, 'Six students — A, B, C, D, E and F — are sitting around a circular table, all facing the centre The following conditions apply:
+A is sitting immediately to the left of B.
+C is sitting exactly opposite A.
+D is not sitting next to C.
+E is sitting immediately to the right of F.
+B is not sitting opposite D.
+If A is fixed at the top position of the table, who must be sitting opposite E?
+', 'B', 'C', 'D', 'F', 'A'),
+(19, 'A processors performance is affected by cache hierarchy, memory latency, and instruction execution. Which cache level is typically the fastest and smallest, located closest to the CPU execution units?', 'L1 Cache', 'L2 Cache', 'L3 Cache', 'DRAM', 'A'),
+(20, 'In a moderately skewed distribution, which of the following correctly expresses the empirical relationship among the mean, median, and mode?', 'Mode= 2 Mean - 3Median', 'Mode= 3 Mean - 2Median', 'Mode= 3 Median - 2 Mean', 'Mode= 2 Median - 3 Mean', 'C'),
+(21, 'Which AI model has highest Intelligence in agentic index in current time?', 'Fable 5 (max)', 'GPT 5.6 Sol (max)', 'GLM 5.3 (max)', 'Opus 5 (max)', 'D'),
+(22, 'Which company made Elon Musk a millionaire?', 'PayPal', 'Zip2', 'Tesla', 'Neuralink Corporation', 'B'),
+(23, 'Which company was the worlds undisputed largest mobile phone manufacturer until 2012, but catastrophically missed the shift to app-store software ecosystems and touchscreens?', 'Blackberry', 'Micromax', 'Nokia', 'Motorola', 'C'),
+(24, 'Before becoming a standalone company, Android Inc. was acquired by:', 'Apple', 'Microsoft', 'Google', 'Samsung', 'C'),
+(25, 'Which company acquired GitHub in 2018?', 'Google', 'Amazon', 'Microsoft', 'IBM', 'C');
+
+
 
 CREATE TABLE `responses` (
   `id` int(11) NOT NULL,
@@ -74,11 +85,11 @@ CREATE TABLE `tie_questions` (
 
 
 INSERT INTO `tie_questions` (`id`, `question_text`, `option_a`, `option_b`, `option_c`, `option_d`, `correct_option`) VALUES
-(1, 'A dataset contains the following values: 2,4,4,4,5,5,7,9. Compute the variance.', '3', '4', '2.5', '5', 'B'),
-(2, 'There are 80 closed doors in a row and 80 people. At the end of the process, how many doors remain open?', '10', '8', '16', '40', 'B'),
-(3, 'You have 3 switches controlling 3 bulbs and can enter the room only once. How do you identify which switch controls which bulb?', 'Turn switch 1 on, wait, turn it off, turn switch 2 on, check', 'Turn switch 1 on, turn switch 2 on, check', 'Turn switch 1 on, wait, turn switch 2 on, check', 'Turn all switches on, check', 'A'),
-(4, 'A number written as 111 in base xxx equals 31 in decimal. What is the value of xxx?', '2', '3', '5', '6', 'D'),
-(5, 'A program spends 40% of its time in a part that can be improved 5×. Overall speedup is:', '1.5×', '1.9×', '2.5×', '3.0×', 'B');
+(1, 'Which architectural technology/algorithm do massive mapping systems like Google Maps primarily rely on to execute sub-second route calculation and live dynamic rerouting across global-scale road networks?', 'Bellman-Ford algorithm enhanced with spatial hashing and dynamic programming table', 'Contraction Hierarchies combined with heuristic search (such as A*)', 'Bi-directional Breadth-First Search (BFS) paired with real-time Euclidean bounding-box pruning', 'Floyd-Warshall algorithm accelerated via massively parallelized GPU matrix tensor multiplications', 'B'),
+(2, 'Which Microsoft device, first introduced in 2012, combines the portability of a tablet with the functionality of a computer?', 'Microsoft Surface', 'Microsoft Studio', 'Microsoft Lumia', 'Microsoft Windows', 'A'),
+(3, 'In modern out-of-order superscalar processors, which structure primarily helps track the status and dependencies of in-flight instructions so operands can be supplied when they become available?', 'Reorder Buffer', 'Reservation Station', 'Branch Target Buffer', 'Translation Lookaside Buffer', 'B'),
+(4, 'Which famous fictional AI system from 2001: A Space Odyssey became one of the most recognizable representations of artificial intelligence in cinema?', 'JARVIS', 'HAL 9000', 'Skynet', 'Mother (MU-TH-UR 6000)', 'B'),
+(5, 'A web server supports TLS 1.3. During a normal authenticated HTTPS connection, which property does the servers digital certificate primarily help the client establish?', 'The servers available RAM capacity', 'The servers claimed identity', 'The clients CPU speed', 'The exact physical route of every packet', 'B');
 
 
 CREATE TABLE `tie_responses` (
